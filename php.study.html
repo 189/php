@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		html,body,div,pre { margin: 0; padding: 0; }
+		pre { border-top: 2px dashed #000; margin-top: 50px; padding:10px 20px; }
+	</style>
+</head>
+<body>
+<pre>
+	第3章 php语言基础
+
+	1、标记风格
+		XML风格
+			<?php
+				echo "php";
+			?>
+		脚本风格
+			<script language="php">
+				echo "php";
+			</script>
+		简短风格--需要设置php.ini
+			<?
+				echo "php";
+			?>
+		asp风格--需要设置php.ini
+			<%
+				echo "asp风格";
+			%>
+
+	2、注释
+		C++风格
+			单行 //，注释内容不允许出现?>标志
+			多行 /*...*/不允许嵌套操作
+		shell风格
+			#
+
+	3、数据类型
+		4种标量类型
+			bolean
+				true和false;
+				一些情况下等同于true和false的0,0.0,"0",""，只声明没有赋值的数组等;
+				==========JS中,if("0"){} "0"视为true================
+				php中,if("0"){} "0"视为false
+			
+			integer
+				整型可以用2进制，8进制，10进制，16进制表示。
+				8进制0开头， 012334
+				16进制0x开头, 0x12334
+				如果给定的数值超出了整型可以表示的范围，整型会被当成浮点数来处理。这种情况称为整型溢出。
+
+			float/double
+				在php 4.0之前的版本中，浮点型也标记为double，双精度浮点数。
+			string
+				'', "", 界定符<<<
+				''单纯输出字符串。""输出字符串中包含的变量。所以""中遇到""、$等字符的使用，需要用\转义显示。
+				\n和\r在windows下表现都为回车符，linux中\n表示换到下一行，\r表示回到行首，仍在本行。
+				<<<界定符，php 4.0新增的语法。效果等同于""。
+				$a = 
+				<<<END
+				这是字符串，接在界定符END后面，界定符END结束标记必须左顶格写。
+				END;
+				echo $a;
+
+		2种符合类型
+			array
+				定义数组的方法：
+				$array = array(value1, value2, value3...);
+				$array['a'] = 1;
+				$array = array('a'=>"1", 'b'=>2);
+
+			object
+
+		2种特殊类型
+			resource
+			NULL
+				同null
+				产生空值的情况有3种：
+					1)变量没有赋值;
+					2)被赋值null
+					3)被unset()处理过。php4开始，unset()不在具有返回值。
+				is_null()判断变量是否为空值。
+
+
+		PHP的变量类型不是程序猿定的，而是php根据变量在上下文运行时决定的。
+		
+		数据类型转换
+			方法1：不改变原来变量，返回改变之后的值。
+					(boolean)$a;
+					(string)$a;
+					(float)$a;
+					(integer)$a;
+					(array)$a;
+					(object)$a;
+			方法2：settype(var, type)改变原来变量，返回1和0表示改变成功和失败
+					settype($a, 'integer');
+					settype($a, 'float');
+					settype($a, 'string');
+					settype($a, 'integer');
+					settype($a, 'array');
+					settype($a, 'object');
+		
+		检测数据类型
+			返回true或者空
+			is_bool(var)
+			is_string(var)
+			is_float(var)/is_double(var)
+			is_integer(var)/is_int(var)
+			is_null(var)
+			is_array(var)
+			is_object(var)
+			is_numeric(var) 检查变量是否为数字或数字组成的字符串。
+	
+	4、常量变量
+		常量
+			声明常量 
+				define(contant_name, constant_value, case_sensitive); 
+				case_sensitive=true对大小写不敏感
+			获取常量 
+				constant(constant_name)或直接获取;
+			判断常量是否定义 
+				defined(constant_name);
+			预定义的常量
+				__FILE__ PHP程序文件名;大小写不敏感
+				__LINE__ PHP程序行数;大小写不敏感
+				PHP_OS   执行PHP解析器的操作系统名称
+				TRUE
+				FALSE
+				NULL
+				E_ERROR  该常量指到最近的错误处;
+				E_WARNNING 该常量指到最近的警告处；
+				E_PARSE  该常量指到语法有嵌在问题处
+				E_NOTICE 该常量为不寻常处的提示，但不一定是错误处
+
+		变量
+			变量声明和引用
+				$字母数字下划线，不能以数字开头
+				正常引用
+					$a = 3;
+					$b = $a;
+					$a = 4;
+					echo $b; // 3
+				引用赋值
+					$a = 3;
+					$b = &$a;
+					$a = 4;
+					echo $b; // 4
+
+			变量作用域
+				局部变量
+					定义在函数内部，作用域为整个函数。
+				全局变量
+					定义在函数作用于之外，作用域是整个php文件。在用户自定义函数内部不可用。若希望自定义函数内部也可用，需要加global关键字。
+					$a = 3;
+					$b = 4;
+					function xx(){
+						echo $b; // 报错
+					    global $a;
+					    echo $a; // 3;
+					}
+					xx();
+
+				静态变量
+					static修饰的变量，定义在函数内部，在函数调用的时候初始化，调用结束不销毁变量，依然保留原来的值的基础上继续变化,重复执行不重新初始化。
+					function xx(){
+						static $a = 1;
+						$a++;
+						echo $a;
+					}
+					xx(); // 2
+					xx(); // 3
+					xx(); // 4
+
+				可变变量
+					变量的名称由另外一个变量的值来决定。实现过程就是在一般的变量前面加个$。
+					$a = "b";
+					$b = "bb";
+					echo $$a; // "bb"
+			
+			预定义变量
+				$_SERVER[]
+					$_SERVER['SERVER_ADDR'] 当前运行脚本所在的服务器IP地址
+					$_SERVER['SERVER_NAME'] 当前运行脚本所在的服务器主机名称
+					$_SERVER['REQUEST_METHOD'] 访问页面的请求方式
+					$_SERVER['REMOTE_ADDR'] 正在浏览当前页面的用户的IP地址
+					$_SERVER['REMOTE_HOST'] 正在浏览当前页面的用户的主机名称
+					$_SERVER['REMOTE_PORT'] 用户连接到服务器时所使用的端口
+					$_SERVER['SCRIPT_FILENAME'] 当前正在执行脚本的绝对路径名称
+					$_SERVER['SERVER_PORT'] 服务器所使用的端口，默认为80
+					$_SERVER['SERVER_SIGNATURE'] 包含服务器版本和虚拟主机名称的字符串
+					$_SERVER['DOCUMENT_ROOT'] 当前运行脚本所在的文档根目录
+				$_SESSION[]
+				$_COOKIE[]
+				$_POST[]
+				$_GET[]
+				$_GLOBALS[]
+	
+	5、运算符
+		算数运算符
+		字符串运算符
+		逻辑运算符 
+			逻辑与 &&或and
+			逻辑或 ||或or
+			逻辑异或 即一真一假 xor 如 $m xor $n
+			逻辑非  ！
+		比较运算符
+		错误控制运算符
+			@错误屏蔽运算符,只是屏蔽错误显示，但不能解决错误
+				$err = @(6/0);
+		三元运算符
+		运算符的先后顺序 先乘除后加减，同级由左向右
+
+	6、表达式
+	7、php函数
+		按值传参，不修改实参的值
+			$m = 1;
+			function xx($m){
+				$m++;
+				echo $m . "<br>";
+			}
+			xx($m); // 2
+			echo $m; // 1
+		
+		按引用传参，会修改实参指向的值
+			$m = 1;
+			function xx(&$m){
+				$m++;
+				echo $m . "<br>";
+			}
+			xx($m); // 2
+			echo $m; // 2
+	
+		默认参数
+			function xx($m=11){
+				echo $m;
+			}
+			xx(); // 11
+		
+		从函数中返回值
+			return;
+
+		变量函数
+			$a = "come";
+			function come(){
+				echo "come";
+			}
+			$a();// come
+		
+		对函数的引用
+			跟按引用传递变量和按引用修改实参一样，函数也可以按引用传递。
+			function &xx($tmp=0){
+				return $tmp;
+			}
+			$str = &xx("哈啊");
+			echo $str;
+
+		取消对函数的引用
+			unset();
+			$a = 333;
+			$b = &$a;
+			echo $b; // 333;
+			unset($b);
+			echo $b; // 报错
+			echo $a; // 333
+
+	8、编码规范
+</pre>
+<pre>
+	第4章 流程控制语句
+	1、条件控制语句
+		if{}
+		if{}else{}
+		if{}elseif{}elseif{}else{}或 if{}else if{}else if{}else{}
+		switch{case}
+		rand(int min, int max); //返回min和max之间的一个随机整数,包括min和max本身，
+								  ======相当于JS的Math.random()*(max-min) + min======;
+	2、循环控制语句
+		while(express){statement; }
+		do{}while(){}
+		for($i=0;$i<;$i++){}
+		foreach php4新增，只能用于数组
+			$arr = array("a", "b", "c"); 
+			$arr2 = array("1"=>"aa", "2"=>"bb", "3"=>"cc");
+			foreach($arr as $value){
+				echo $value; // "a" // "b" // "c";
+			}
+			foreach ($arr2 as $key => $value) {
+				echo $key . '-->' . $value . "<br>"; // 1-->aa // 2-->bb // 3-->cc
+			}
+
+		continue 终止本次循环，进入到下一次循环中，
+			continue $num 终止本次循环，进入到第$num层循环中继续循环。
+		break
+			
+	3、流程控制的另外一种书写格式
+		:来代替{
+		end+语句类型来代替}
+		以此来解决复杂php页面寻找{}的问题。
+		
+		if($a):
+			#code...
+		endif;
+
+		$arr2 = array("1"=>"aa", "2"=>"bb", "3"=>"cc");
+		foreach ($arr2 as $key => $value) :
+			echo $key . '-->' . $value . "<br>";
+		endforeach;
+		等...
+
+</pre>
+
+<pre>
+	第5章 字符串操作
+	1、单引号和双引号的区别
+		单引号：单纯输出字符串，所见即所得;
+		双引号：会解析字符串中的变量。
+			在进行SQL查询之前，所有字符串都必须加单引号，避免可能的注入漏洞和SQL错误。
+
+	2、字符串连接符
+		.
+	
+	3、去除字符串收尾空格和特殊字符
+		trim(string str [,string charlist]); 
+			用于去除字符串开始位置以及结束位置的空格或指定字符串。
+			charlist表示从字符串首位中删除哪些指定的字符。
+		ltrim(string str [,string charlist]);
+		rtrim(string str [,string charlist]);
+
+	4、转义、还原字符串数据
+		手动转义字符串
+			手动添加反斜杠，如 $str = "this is \$name";
+			
+		自动转义-还原字符串
+			对于简单的字符串建议采用手动转义进行字符串转义。对于数据量较大的字符串，建议采用自动转义函数实现。
+			
+			转义 string addslashes(string str)
+			还原 string striptslashes(string str);
+			
+			转义兼范围控制 string addcslashes(string str, string charlist);
+			还原 string striptcslashes(string str);
+			$str = "select * from tb_book where bookname = 'php5 从入门到精通'";
+			echo $str . '<br>';
+			$a = addcslashes($str, 'php');
+			echo $a . '<br>';
+			$b = stripcslashes($a);
+			echo $b;
+
+	5、获取字符串长度
+		int strlen(string str)
+		汉字在php(gb2312编码)中strlen返回2个字符(UTF-编码中占3个字符长度)，字母，数字，下划线和空格各占一个字符。
+		===========JS中,一个汉字就是一个字符长度,JS识别字符串为UTF8编码================
+		int mb_strlen(string str, string type); 指定字符串的解析编码。
+			mb_strlen("哈", "gb2312"); // 2
+			mb_strlen("哈", "utf8");   // 1
+		
+			求字符串中英文混排的字符串长度(国内页面默认UTF8格式，一个中文即长度为1)
+			$str = '哈哈1';
+			echo (strlen($str) + mb_strlen($str, "utf8"))/2  => (7 + 3)/2 => 5 
+			求字符串中中文个数
+			$str = '哈哈1';
+			echo (strlen($str) - mb_strlen($str, "utf8"))/2  => (7 - 3)/2 => 2 
+	
+	6、截取字符串
+		string substr(string str, int start [,int length]);
+		str 目标字符串对象
+		start 开始截取的位置，，若为负数，从末尾开始截取
+		length 截取的长度
+
+	7、比较字符串
+		
+
+</pre>
+
+<pre>
+	第11章 cookie和session
+一、cookie
+	1、创建/设置cookie
+		cookie是http头标的组成部分，头标必须在页面其他内容之前发送，所以必须最先输出。
+		setcookie(name, value，expire, path, domain, secure);
+			name [string]
+			value[string]
+			expire[int] 单位为秒，非毫秒，若不设置，则cookie永久有效，除非手动删除或者关闭浏览器
+			path [string] 文件在服务器端的有效路径
+			domain[string]
+			secure[int]  不是boolean值是个整型数据?
+	2、获取cookie
+		超级全局数组$_COOKIE[cookiename]
+	3、删除cookie
+		setcookie(name, "", time() - 1);
+	4、cookie的生命周期
+		一个没有设置过期时间expire的cookie并没有存在用户硬盘上面，而是存在浏览器内存当中，会随着浏览器关闭而消失。
+		此类称为会话cookie。
+		浏览器最多只能存储300个cookie文件，每个域名下最多支持20个cookie，单个cookie最多4KB。
+		若达到限制，则浏览器会自动随机删除cookie
+二、session
+	概念：会话，在服务器端存储用户信息。
+	原理：在启动一个session会话时，会随机生成一个唯一的session_id，即session的文件名，此时该session_id存在于服务器内存中，随着页面关闭而销毁。当用户再次登录访问时，又会生成一个唯一的随机的session_id。
+	功能：在无状态的网页连接程序中记录和存储用户信息，以供用户再次访问时确认。
+	1、创建session会话
+		创建一个会话需要经过下面4步：
+		启动会话->注册会话->使用会话->删除会话
+			启动：
+				session_start(); 在输出页面内容之前执行
+				或者
+				session_register(); 为会话登录一个变量来隐含的启动会话(隐含调用session_start())。要求php.ini中register_global支持。
+			注册：
+				session_start();
+				$_SESSION["admin"] = null;
+			使用：
+				if(!empty($_SESSION["admin"])){
+					$admin = $_SESSION["admin"];
+				}
+			删除：
+				删除单个会话
+					unset($_SESSION["admin"];
+				删除且禁用Session
+					unset($_SESSION);
+				删除所有会话变量
+					$_SESSION = array();
+				清楚结束当前会话
+					在注销所有会话变量之后再用下面结束当前会话
+					session_destroy();
+	2、设置session时间
+		客户端没有禁用cookie设置session时间
+			方法1: 在一些浏览器上存在问题
+				$time = 1 * 60;
+				session_set_cookie_params($time);
+				session_start();
+				$_SESSION["admin"] = "kelvinwang";
+			方法2：
+				session_start();
+				setcookie(session_name(), session_id(), time() + 60, "/");
+				$_SESSION["admin"] = "kelvinwang";
+		客户端禁用cookie设置session过期时间
+			使用文件或者数据库存储session
+					
+
+	
+</pre>
+</body>
+</html>
